@@ -1,5 +1,6 @@
 # from django.shortcuts import render
 from rest_framework.views import APIView
+from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -44,3 +45,45 @@ class HelloApiView(APIView):
     def delete(self, request, pk=None):
         """Create a DELETE method"""
         return Response({'message': 'DELETE'})
+
+
+class HelloViewSet(viewsets.ViewSet):
+    """Test ViewSet"""
+    serializer_class = serializers.HelloSerializer
+
+    def list(self, request):
+        """test list/get function"""
+        a_list_view = [
+            'Hello Dear',
+            'There is something',
+            'im learning viewset'
+        ]
+        return Response({'message': 'viewset list', 'a_list_view': a_list_view})
+
+    def create(self, request):
+        """Test create/post function by hello function"""
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.validated_data.get('name')
+            message = f'hello {name}'
+            return Response({'message': message})
+
+        else:
+            return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
+
+    def retrieve(self, request, pk=None):
+        """Handle getting object by its id"""
+        return Response({'http_method': 'GET'})
+
+    def update(self, request, pk=None):
+        """Handle updating an object"""
+        return Response({'http_method': 'PUT'})
+
+    def partial_update(self, request, pk=None):
+        """Handle update part of an object"""
+        return Response({'http_method': 'PATCH'})
+
+    def destroy(self, request, pk=None):
+        """Handle destroy an object"""
+        return Response({'http_method': 'DELETE'})
